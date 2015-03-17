@@ -1,0 +1,5 @@
+Module: graphite
+Version: 0.0.0.1
+Dependencies: Icinga2 graphite carbon cache writer
+Description: Graphite graphs for perfdata
+ Shows graphite graphs for captured metrics. The monitored service needs to have custom vars of the form vars.graphite_keys =["key1","key2"]
