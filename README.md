@@ -8,7 +8,7 @@ The monitored host or service then needs to have custom vars of the form vars.gr
 
 ## Installation
 
-Just extract this to your Icinga Web 2 module folder.
+Just extract this to your Icinga Web 2 module folder in a folder called graphite.
 
 (Configuration -> Modules -> graphite -> enable). Check the modules config tab right there.
 
