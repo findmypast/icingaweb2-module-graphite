@@ -16,3 +16,6 @@ NB: It is best practice to install 3rd party modules into a distinct module
 folder like /usr/share/icingaweb2/modules. In case you don't know where this
 might be please check the module path in your Icinga Web 2 configuration.
 
+## Hats off to
+
+This module borrows a lot from https://github.com/Icinga/icingaweb2-module-pnp4nagios
