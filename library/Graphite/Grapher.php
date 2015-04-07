@@ -103,9 +103,11 @@ class Grapher extends GrapherHook
 
     private function graphitify($str)
     {
-        $str=str_replace('-','_',$str);
-        $str=str_replace('.','_',$str);
         $str=str_replace(' ','_',$str);
+        $str=str_replace('.','_',$str);
+        $str=str_replace('-','_',$str);
+        $str=str_replace('\\','_',$str);
+        $str=str_replace('/','_',$str);
         return $str;
     }
 
