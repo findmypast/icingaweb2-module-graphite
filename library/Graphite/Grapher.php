@@ -76,7 +76,7 @@ class Grapher extends GrapherHook
         if  ($service != '_HOST_' ){
             $target .= '.'. $this->graphitify($service);
         }
-        $target .= '.'. $this->graphitify($metric);
+        $target .= '.'. $this->graphitify($metric, true);
         $imgUrl = sprintf(
             '%s&target=%s.%s&source=0&width=100&height=40&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF',
             $this->baseUrl,
@@ -101,9 +101,13 @@ class Grapher extends GrapherHook
        );
     }
 
-    private function graphitify($str)
+    private function graphitify($str, $isMetric = false)
     {
         $str=str_replace(' ','_',$str);
+        if (!$metric_flag)
+        {
+            $str=str_replace('.','_',$str);
+        }
         $str=str_replace('-','_',$str);
         $str=str_replace('\\','_',$str);
         $str=str_replace('/','_',$str);
@@ -116,7 +120,7 @@ class Grapher extends GrapherHook
         if  ($service != '_HOST_' ){
             $target .= '.'. $this->graphitify($service);
         }
-        $target .= '.'. $this->graphitify($metric);
+        $target .= '.'. $this->graphitify($metric, true);
         $imgUrl = sprintf(
             '%s&target=%s.%s&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF',
             $this->baseUrl,
