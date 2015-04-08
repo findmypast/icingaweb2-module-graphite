@@ -103,7 +103,7 @@ class Grapher extends GrapherHook
 
     private function graphitify($str, $isMetric = false)
     {
-		if (!$isMetric)
+        if (!$isMetric)
         {
             $str=str_replace('.','_',$str);
         }
