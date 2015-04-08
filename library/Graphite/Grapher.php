@@ -104,7 +104,7 @@ class Grapher extends GrapherHook
     private function graphitify($str, $isMetric = false)
     {
         $str=str_replace(' ','_',$str);
-        if (!$metric_flag)
+        if (!$isMetric)
         {
             $str=str_replace('.','_',$str);
         }
