@@ -7,6 +7,7 @@ use Icinga\Exception\ConfigurationError;
 use Icinga\Module\Monitoring\Object\MonitoredObject;
 use Icinga\Module\Monitoring\Object\Host;
 use Icinga\Module\Monitoring\Object\Service;
+use Icinga\Module\Monitoring\Plugin\PerfdataSet;
 use Icinga\Web\Hook\GrapherHook;
 use Icinga\Web\Url;
 
@@ -41,8 +42,13 @@ class Grapher extends GrapherHook
     public function getPreviewHtml(MonitoredObject $object)
     {
         $object->fetchCustomvars();
-        if (! array_key_exists("Graphite Keys", $object->customvars)) return;
-        $graphiteKeys = $object->customvars["Graphite Keys"];
+        if (array_key_exists("Graphite Keys", $object->customvars))
+            $graphiteKeys = $object->customvars["Graphite Keys"];
+        else {
+            $graphiteKeys = array();
+            foreach (PerfdataSet::fromString($object->perfdata)->asArray() as $pd)
+                $graphiteKeys[] = $pd->getLabel();
+        }
 
         if ($object instanceof Host) {
             $service = '_HOST_';
