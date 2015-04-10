@@ -1,1 +1,8 @@
-<iframe src="<?= urldecode($this->url) ?>" style="height: 99%; width:100%" frameborder="no"></iframe>
+<ul>
+<li><a target="graph_iframe" href="<?= urldecode($this->url) ?>&from=-10min">10 minutes</a></li>
+<li><a target="graph_iframe" href="<?= urldecode($this->url) ?>&from=-1h">1 hour</a></li>
+<li><a target="graph_iframe" href="<?= urldecode($this->url) ?>&from=-12h" active>12 hour</a></li>
+<li><a target="graph_iframe" href="<?= urldecode($this->url) ?>&from=-1d">1 day</a></li>
+<li><a target="graph_iframe" href="<?= urldecode($this->url) ?>&from=-1w">1 week</a></li>
+</ul>
+<iframe name ="graph_iframe" src="<?= urldecode($this->url) ?>&from=-1d" style="height: 99%; width:100%" frameborder="no"></iframe>
