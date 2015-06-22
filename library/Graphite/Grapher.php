@@ -18,12 +18,16 @@ class Grapher extends GrapherHook
     protected $graphiteConfig;
     protected $baseUrl = 'http://graphite.com/render/?';
     protected $metricPrefix = 'icinga';
+    protected $serviceMacro = '$HOSTNAME$.$SERVICEDESC$';
+    protected $hostMacro = '$HOSTNAME$';
 
     protected function init()
     {
         $cfg = Config::module('graphite')->getSection('graphite');
-        $this->baseUrl   = rtrim($cfg->get('base_url', $this->baseUrl), '/');
-        $this->metricPrefix   = rtrim($cfg->get('metric_prefix', $this->metricPrefix), '/');
+        $this->baseUrl = rtrim($cfg->get('base_url', $this->baseUrl), '/');
+        $this->metricPrefix = $cfg->get('metric_prefix', $this->metricPrefix);
+        $this->serviceMacro = $cfg->get('service_name_template', $this->serviceMacro);
+        $this->hostMacro = $cfg->get('host_name_template', $this->hostMacro);
     }
 
     public function has(MonitoredObject $object)
@@ -51,82 +55,51 @@ class Grapher extends GrapherHook
         }
 
         if ($object instanceof Host) {
-            $service = '_HOST_';
+            $host = $object;
+            $service = null;
         } elseif ($object instanceof Service) {
-            $service = $object->service_description;
+            $service = $object;
+            $host = null;
         } else {
             return '';
         }
 
-        $host = $object->host_name;
-
         $html = "<table class=\"avp newsection\">\n"
                ."<tbody>\n";
+
         foreach ($graphiteKeys as $metric) {
             $html .= "<tr><th>\n"
                   . "$metric\n" 
                   . '</th><td>'
-                  . $this->getPreviewImg($host, $service, $metric)
+                  . $this->getPreviewImage($host, $service, $metric)
                   . "</td>\n"
                   . "<tr>\n";
         }
+
         $html .= "</tbody></table>\n";
         return $html;
     }
 
-    // Currently unused, but would work fine. This is for tiny preview images
-    // in list views
+    // Currently unused,
     public function getSmallPreviewImage($host, $service = null)
-    {
-        $target=$this->graphitify($host);
-        if  ($service != '_HOST_' ){
-            $target .= '.'. $this->graphitify($service);
-        }
-        $target .= '.'. $this->graphitify($metric, true);
-        $imgUrl = sprintf(
-            '%s&target=%s.%s&source=0&width=100&height=40&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF',
-            $this->baseUrl,
-            $this->metricPrefix,
-            $target
-        );
-
-        $url = Url::fromPath('graphite', array(
-            'target' => urlencode($target),
-            'base_url' => urlencode($this->baseUrl),
-            'metric_prefix' => urlencode($this->metricPrefix)
-        ));
-
-        $html = '<a href="%s" title="%s"><img src="%s" alt="%s" width="300" height="120" /></a>';
-
-        return sprintf(
-            $html,
-            $url,
-            $metric,
-            $imgUrl,
-            $metric
-       );
+    {       
+        return null;
     }
 
-    private function graphitify($str, $isMetric = false)
-    {
-        if (!$isMetric)
-        {
-            $str=str_replace('.','_',$str);
+    private function getPreviewImage($host, $service, $metric)
+    {        
+      
+        if ($host != Null){
+            $target = Macro::resolveMacros($this->hostMacro, $host);
+        } elseif  ($service != null ){
+            $target = Macro::resolveMacros($this->serviceMacro, $service);
+        } else {
+           $target = '';
         }
-        $str=str_replace(' ','_',$str);        
-        $str=str_replace('-','_',$str);
-        $str=str_replace('\\','_',$str);
-        $str=str_replace('/','_',$str);
-        return $str;
-    }
 
-    private function getPreviewImg($host, $service, $metric)
-    {
-        $target=$this->graphitify($host);
-        if  ($service != '_HOST_' ){
-            $target .= '.'. $this->graphitify($service);
-        }
-        $target .= '.'. $this->graphitify($metric, true);
+        $target .= '.'. Macro::escapeMetric($metric, true);
+
+
         $imgUrl = sprintf(
             '%s&target=%s.%s&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF',
             $this->baseUrl,

@@ -6,6 +6,7 @@ Enable the graphite carbon cache writer: http://docs.icinga.org/icinga2/latest/d
 
 All perfdata metrics will be automatically included as graphs however if you just want a subset, the host or service then needs to have custom vars of the form vars.graphite_keys =["key1","key2"] where key1 key2 represent perfdata stats you want to see.
 
+You can configure the graphite metric keys formats by using standard-ish icinga2 macros.
 ## Installation
 
 Just extract this to your Icinga Web 2 module folder in a folder called graphite.
