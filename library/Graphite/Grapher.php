@@ -97,7 +97,7 @@ class Grapher extends GrapherHook
            $target = '';
         }
 
-        $target .= '.'. Macro::escapeMetric($metric, true);
+        $target .= '.'. Macro::escapeMetric($metric);
 
 
         $imgUrl = sprintf(

@@ -75,12 +75,9 @@ class Macro
         return $macro;
     }
 
-    public static function escapeMetric($str, $isMetric)
-    {
-        if (!$isMetric)
-        {
-            $str=str_replace('.','_',$str);
-        }
+    public static function escapeMetric($str)
+    {       
+        $str=str_replace('.','_',$str);        
         $str=str_replace(' ','_',$str);
         $str=str_replace('-','_',$str);
         $str=str_replace('\\','_',$str);
