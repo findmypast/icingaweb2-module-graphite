@@ -27,14 +27,16 @@ class Macro
      *
      * @return  string                                  The substituted or unchanged string
      */
-    public static function resolveMacros($input, $object)
+    public static function resolveMacros($input, $object, $escape = true)
     {
         $matches = array();
         if (preg_match_all('@\$([^\$\s]+)\$@', $input, $matches)) {
             foreach ($matches[1] as $key => $value) {
                 $newValue = self::resolveMacro($value, $object);
                 if ($newValue !== $value) {
-                    $newValue = self::escapeMetric($newValue, false);
+                    if ($escape){
+                      $newValue = self::escapeMetric($newValue, false);
+                    }                    
                     $input = str_replace($matches[0][$key], $newValue, $input);
                 }
             }
