@@ -11,9 +11,9 @@ metric_prefix = icinga
 base_url = http://graphite.com/render?
 service_name_template = $HOSTNAME$.$SERVICEDESC$
 host_name_template = $HOSTNAME$
-#this template is used for the small image, macro $target$ can used.
+;this template is used for the small image, macro $target$ can used.
 graphite_args_template = "&target=$target$&source=0&width=300&height=120&hideAxes=true&ineWidth=2&hideLegend=true&colorList=049BAF"
-#this template is used for the large image, macro $target$ can used. 
-#graphite_large_args_template = "&target=alias(color($target$_warn,'yellow'),'warning')&target=alias(color($target$_crit,'red'),'critical')&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected"
+;this template is used for the large image, macro $target$ can used. 
+;graphite_large_args_template = "&target=alias(color($target$_warn,'yellow'),'warning')&target=alias(color($target$_crit,'red'),'critical')&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected"
 </pre>
 </div>
