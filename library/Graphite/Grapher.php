@@ -20,6 +20,8 @@ class Grapher extends GrapherHook
     protected $metricPrefix = 'icinga';
     protected $serviceMacro = '$HOSTNAME$.$SERVICEDESC$';
     protected $hostMacro = '$HOSTNAME$';
+    protected $imageUrlMacro = '&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF';
+    protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected';
 
     protected function init()
     {
@@ -28,6 +30,8 @@ class Grapher extends GrapherHook
         $this->metricPrefix = $cfg->get('metric_prefix', $this->metricPrefix);
         $this->serviceMacro = $cfg->get('service_name_template', $this->serviceMacro);
         $this->hostMacro = $cfg->get('host_name_template', $this->hostMacro);
+        $this->imageUrlMacro = $cfg->get('graphite_args_template', $this->imageUrlMacro);
+        $this->largeImageUrlMacro = $cfg->get('graphite_large_args_template', $this->largeImageUrlMacro);
     }
 
     public function has(MonitoredObject $object)
@@ -98,19 +102,15 @@ class Grapher extends GrapherHook
         }
 
         $target .= '.'. Macro::escapeMetric($metric);
+        $target = $this->metricPrefix . "." . $target;
 
 
-        $imgUrl = sprintf(
-            '%s&target=%s.%s&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF',
-            $this->baseUrl,
-            $this->metricPrefix,
-            $target
-        );
+        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target), false);
+
+        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target), false);
 
         $url = Url::fromPath('graphite', array(
-            'target' => urlencode($target),
-            'base_url' => urlencode($this->baseUrl),
-            'metric_prefix' => urlencode($this->metricPrefix)
+            'graphite_url' => urlencode($largeImgUrl)
         ));
 
         $html = '<a href="%s" title="%s"><img src="%s" alt="%s" width="300" height="120" /></a>';

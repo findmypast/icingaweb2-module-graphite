@@ -54,6 +54,10 @@ class Macro
      */
     public static function resolveMacro($macro, $object)
     {
+        if (is_array($object) && array_key_exists($macro, $object)) {
+            return $object[$macro];
+        }
+
         if (array_key_exists($macro, self::$icingaMacros) && $object->{self::$icingaMacros[$macro]} !== false) {
             return $object->{self::$icingaMacros[$macro]};
         }
