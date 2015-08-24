@@ -16,7 +16,8 @@ class Macro
     private static $icingaMacros = array(
         'HOSTNAME'     => 'host_name',
         'HOSTADDRESS'  => 'host_address',
-        'SERVICEDESC'  => 'service_description'        
+        'SERVICEDESC'  => 'service_description',
+        'service.name' => 'service_description'
     );
 
     /**
@@ -94,11 +95,13 @@ class Macro
     private static function translateTerm($term){
 
         if (substr($term, 0, strlen('host.vars.')) === 'host.vars.'){
-            return str_replace('host.vars.','',$term);
+            $term = str_replace('host.vars.','',$term);
+            return ucwords(str_replace('_', ' ', strtolower($cv->varname)));
         }
 
         if (substr($term, 0, strlen('service.vars.')) === 'service.vars.'){
-            return str_replace('service.vars.','',$term);
+            $term = str_replace('service.vars.','',$term);
+            return ucwords(str_replace('_', ' ', strtolower($cv->varname)));
         }
 
         if (substr($term, 0, strlen('service.')) === 'service.'){
@@ -107,8 +110,6 @@ class Macro
 
         if (substr($term, 0, strlen('host.')) === 'host.'){
             return str_replace('host.','host_',$term);
-        }
-
-
+        }     
     }
 }
