@@ -22,12 +22,14 @@ class Grapher extends GrapherHook
     protected $hostMacro = '$HOSTNAME$';
     protected $imageUrlMacro = '&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF';
     protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected';
+    protected $legacyMode = 'false';
 
     protected function init()
     {
         $cfg = Config::module('graphite')->getSection('graphite');
         $this->baseUrl = rtrim($cfg->get('base_url', $this->baseUrl), '/');
         $this->metricPrefix = $cfg->get('metric_prefix', $this->metricPrefix);
+        $this->legacyMode = $cfg->get('legacy_mode', $this->legacyMode);
         $this->serviceMacro = $cfg->get('service_name_template', $this->serviceMacro);
         $this->hostMacro = $cfg->get('host_name_template', $this->hostMacro);
         $this->imageUrlMacro = $cfg->get('graphite_args_template', $this->imageUrlMacro);
@@ -102,6 +104,11 @@ class Grapher extends GrapherHook
         }
 
         $target .= '.'. Macro::escapeMetric($metric);
+
+        if ($this->legacyMode == 'false'){
+            $target .= '.value';
+        }
+
         $target = $this->metricPrefix . "." . $target;
 
 

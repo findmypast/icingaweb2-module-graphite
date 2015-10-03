@@ -9,8 +9,13 @@
 [graphite]
 metric_prefix = icinga2
 base_url = http://graphite.com/render?
-service_name_template = "$host.name$.services.$service.name$.$service.check_command$"
-host_name_template = "$host.name$.host.$host.check_command$"
+legacy_mode = false
+;if legacy mode is false (2.4 and newer):
+service_name_template = "$host.name$.services.$service.name$.$service.check_command$.perfdata"
+host_name_template = "$host.name$.host.$host.check_command$.perfdata"
+;if legacy mode is true (pre 2.4):
+;service_name_template = "$host.name$.services.$service.name$.$service.check_command$"
+;host_name_template = "$host.name$.host.$host.check_command$"
 ;this template is used for the small image, macro $target$ can used.
 graphite_args_template = "&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF"
 ;this template is used for the large image, macro $target$ can used. 
