@@ -52,8 +52,8 @@ class Grapher extends GrapherHook
     public function getPreviewHtml(MonitoredObject $object)
     {
         $object->fetchCustomvars();
-        if (array_key_exists("Graphite Keys", $object->customvars))
-            $graphiteKeys = $object->customvars["Graphite Keys"];
+        if (array_key_exists("graphite_keys", $object->customvars))
+            $graphiteKeys = $object->customvars["graphite_keys"];
         else {
             $graphiteKeys = array();
             foreach (PerfdataSet::fromString($object->perfdata)->asArray() as $pd)
