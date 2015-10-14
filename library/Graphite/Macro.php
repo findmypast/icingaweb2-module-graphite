@@ -28,7 +28,7 @@ class Macro
      *
      * @return  string                                  The substituted or unchanged string
      */
-    public static function resolveMacros($input, $object, $escape = true)
+    public static function resolveMacros($input, $object, $legacyMode, $escape = true)
     {
         $matches = array();
         if (preg_match_all('@\$([^\$\s]+)\$@', $input, $matches)) {
@@ -36,7 +36,7 @@ class Macro
                 $newValue = self::resolveMacro($value, $object);
                 if ($newValue !== $value) {
                     if ($escape){
-                      $newValue = self::escapeMetric($newValue, false);
+                      $newValue = self::escapeMetric($newValue, $legacyMode);
                     }                    
                     $input = str_replace($matches[0][$key], $newValue, $input);
                 }
@@ -82,9 +82,12 @@ class Macro
         return $macro;
     }
 
-    public static function escapeMetric($str)
+    public static function escapeMetric($str, $legacyMode)
     {       
-        $str=str_replace('.','_',$str);        
+        if ($legacyMode) {
+            $str=str_replace('-','_',$str);
+        }
+        $str=str_replace('.','_',$str);
         $str=str_replace(' ','_',$str);
         $str=str_replace('\\','_',$str);
         $str=str_replace('/','_',$str);

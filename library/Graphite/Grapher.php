@@ -96,14 +96,14 @@ class Grapher extends GrapherHook
     {        
       
         if ($host != Null){
-            $target = Macro::resolveMacros($this->hostMacro, $host);
+            $target = Macro::resolveMacros($this->hostMacro, $host, $this->legacyMode);
         } elseif  ($service != null ){
-            $target = Macro::resolveMacros($this->serviceMacro, $service);
+            $target = Macro::resolveMacros($this->serviceMacro, $service, $this->legacyMode);
         } else {
            $target = '';
         }
 
-        $target .= '.'. Macro::escapeMetric($metric);
+        $target .= '.'. Macro::escapeMetric($metric, $this->legacyMode);
 
         if ($this->legacyMode == 'false'){
             $target .= '.value';
@@ -112,9 +112,9 @@ class Grapher extends GrapherHook
         $target = $this->metricPrefix . "." . $target;
 
 
-        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target), false);
+        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target), $this->legacyMode, false);
 
-        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target), false);
+        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target), $this->legacyMode,  false);
 
         $url = Url::fromPath('graphite', array(
             'graphite_url' => urlencode($largeImgUrl)
