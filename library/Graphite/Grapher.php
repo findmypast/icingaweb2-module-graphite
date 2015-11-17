@@ -22,7 +22,7 @@ class Grapher extends GrapherHook
     protected $hostMacro = '$HOSTNAME$';
     protected $imageUrlMacro = '&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF';
     protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected';
-    protected $legacyMode = 'false';
+    protected $legacyMode = false;
 
     protected function init()
     {
@@ -34,6 +34,8 @@ class Grapher extends GrapherHook
         $this->hostMacro = $cfg->get('host_name_template', $this->hostMacro);
         $this->imageUrlMacro = $cfg->get('graphite_args_template', $this->imageUrlMacro);
         $this->largeImageUrlMacro = $cfg->get('graphite_large_args_template', $this->largeImageUrlMacro);
+
+        $this->legacyMode = filter_var($this->legacyMode, FILTER_VALIDATE_BOOLEAN);
     }
 
     public function has(MonitoredObject $object)
@@ -105,7 +107,7 @@ class Grapher extends GrapherHook
 
         $target .= '.'. Macro::escapeMetric($metric, $this->legacyMode);
 
-        if ($this->legacyMode == 'false'){
+        if ($this->legacyMode == false){
             $target .= '.value';
         }
 
