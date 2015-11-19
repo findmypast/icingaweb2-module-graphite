@@ -18,8 +18,8 @@ class Grapher extends GrapherHook
     protected $graphiteConfig;
     protected $baseUrl = 'http://graphite.com/render/?';
     protected $metricPrefix = 'icinga';
-    protected $serviceMacro = '$HOSTNAME$.$SERVICEDESC$';
-    protected $hostMacro = '$HOSTNAME$';
+    protected $serviceMacro = '$host.name$.services.$service.name$.$service.check_command$.perfdata';
+    protected $hostMacro = '$host.name$.host.$host.check_command$.perfdata';
     protected $imageUrlMacro = '&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF';
     protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected';
     protected $legacyMode = false;
@@ -29,13 +29,11 @@ class Grapher extends GrapherHook
         $cfg = Config::module('graphite')->getSection('graphite');
         $this->baseUrl = rtrim($cfg->get('base_url', $this->baseUrl), '/');
         $this->metricPrefix = $cfg->get('metric_prefix', $this->metricPrefix);
-        $this->legacyMode = $cfg->get('legacy_mode', $this->legacyMode);
+        $this->legacyMode = filter_var($cfg->get('legacy_mode', $this->legacyMode), FILTER_VALIDATE_BOOLEAN);
         $this->serviceMacro = $cfg->get('service_name_template', $this->serviceMacro);
         $this->hostMacro = $cfg->get('host_name_template', $this->hostMacro);
         $this->imageUrlMacro = $cfg->get('graphite_args_template', $this->imageUrlMacro);
         $this->largeImageUrlMacro = $cfg->get('graphite_large_args_template', $this->largeImageUrlMacro);
-
-        $this->legacyMode = filter_var($this->legacyMode, FILTER_VALIDATE_BOOLEAN);
     }
 
     public function has(MonitoredObject $object)
@@ -77,7 +75,7 @@ class Grapher extends GrapherHook
 
         foreach ($graphiteKeys as $metric) {
             $html .= "<tr><th>\n"
-                  . "$metric\n" 
+                  . "$metric\n"
                   . '</th><td>'
                   . $this->getPreviewImage($host, $service, $metric)
                   . "</td>\n"
@@ -90,13 +88,13 @@ class Grapher extends GrapherHook
 
     // Currently unused,
     public function getSmallPreviewImage($host, $service = null)
-    {       
+    {
         return null;
     }
 
     private function getPreviewImage($host, $service, $metric)
-    {        
-      
+    {
+
         if ($host != Null){
             $target = Macro::resolveMacros($this->hostMacro, $host, $this->legacyMode);
         } elseif  ($service != null ){
