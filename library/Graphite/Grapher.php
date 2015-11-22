@@ -51,6 +51,9 @@ class Grapher extends GrapherHook
 
     public function getPreviewHtml(MonitoredObject $object)
     {
+        $perfdata_property = $object->getType() . "_process_perfdata";
+        if ( ! $object->$perfdata_property ) return '';
+
         $object->fetchCustomvars();
         if (array_key_exists("graphite_keys", $object->customvars))
             $graphiteKeys = $object->customvars["graphite_keys"];
