@@ -18,8 +18,8 @@ class Grapher extends GrapherHook
     protected $graphiteConfig;
     protected $baseUrl = 'http://graphite.com/render/?';
     protected $metricPrefix = 'icinga';
-    protected $serviceMacro = '$host.name$.services.$service.name$.$service.check_command$.perfdata';
-    protected $hostMacro = '$host.name$.host.$host.check_command$.perfdata';
+    protected $serviceMacro = '$host.name$.services.$service.name$.$service.check_command$.perfdata.value';
+    protected $hostMacro = '$host.name$.host.$host.check_command$.perfdata.value';
     protected $imageUrlMacro = '&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF';
     protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected';
     protected $legacyMode = false;
@@ -108,12 +108,7 @@ class Grapher extends GrapherHook
 
         $target .= '.'. Macro::escapeMetric($metric, $this->legacyMode);
 
-        if ($this->legacyMode == false){
-            $target .= '.value';
-        }
-
         $target = $this->metricPrefix . "." . $target;
-
 
         $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target), $this->legacyMode, false);
 
