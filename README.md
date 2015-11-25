@@ -44,16 +44,16 @@ Macro template for the small image where $target$ is replaced with the metric na
 Macro template for the large image 
 * *&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected*
 
-```remote_fetch```
+``remote_fetch``
 To allow remote fetch of the graph image. Useful in multi-tenant installations and/or with password protected graphite-web installations (http auth).
 Set base_url as http://user:pass@graphite.com/render?
 * *false*
 
-```remote_verify_peer```
+``remote_verify_peer``
 Verify remote peer certificate (if using https base_url)
 * *false*
 
-```remote_verify_peer_name```
+``remote_verify_peer_name``
 Verify remote peer common name in certificate (if using https base_url)
 * *false*
 
