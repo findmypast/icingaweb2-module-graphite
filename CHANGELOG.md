@@ -1,8 +1,8 @@
 0.0.0.4
 =========
-Removed metric_prefix from config
-Added metric prefix to macro templates
-Added metric to macro templates
+* Removed metric_prefix from config
+* Added metric prefix to macro templates
+* Added metric to macro templates
 0.0.0.3
 =========
 * Removed .value from Grapher.php and added to the macro templates, the default templates respect this change.
