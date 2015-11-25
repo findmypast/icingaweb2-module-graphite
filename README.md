@@ -20,10 +20,6 @@ might be please check the module path in your Icinga Web 2 configuration.
 ##Configuration
 There are various configuration settings to tweak how the module behaves and ensure that it aligns with how the graphite carbon cache writer is set up:
 
-``metric_prefix``
-A prefix for the metrics
-* *icinga*
-
 ``base_url``
 A fully formed url 
 * *http://graphite.com/render?*
