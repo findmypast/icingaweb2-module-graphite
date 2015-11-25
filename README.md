@@ -30,11 +30,11 @@ To support older versions of the writer pre-icinga2 2.4 where true - is replaced
 
 ``service_name_template``
 Macro template for the service name 
-* *icinga2.$host.name$.services.$service.name$.$service.check_command$.perfdata.$metric$.value*
+* *$host.name$.services.$service.name$.$service.check_command$.perfdata*
 
 ``host_name_template``
 Macro template for the host name 
-* *icinga2.$host.name$.host.$host.check_command$.perfdata.$metric$.value*
+* *$host.name$.host.$host.check_command$.perfdata*
 
 ``graphite_args_template ``
 Macro template for the small image where $target$ is replaced with the metric name 
@@ -43,6 +43,19 @@ Macro template for the small image where $target$ is replaced with the metric na
 ``graphite_large_args_template ``
 Macro template for the large image 
 * *&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected*
+
+```remote_fetch```
+To allow remote fetch of the graph image. Useful in multi-tenant installations and/or with password protected graphite-web installations (http auth).
+Set base_url as http://user:pass@graphite.com/render?
+* *false*
+
+```remote_verify_peer```
+Verify remote peer certificate (if using https base_url)
+* *false*
+
+```remote_verify_peer_name```
+Verify remote peer common name in certificate (if using https base_url)
+* *false*
 
 ## Hats off to
 
