@@ -30,11 +30,11 @@ To support older versions of the writer pre-icinga2 2.4 where true - is replaced
 
 ``service_name_template``
 Macro template for the service name 
-* *$host.name$.services.$service.name$.$service.check_command$.perfdata*
+* *icinga2.$host.name$.services.$service.name$.$service.check_command$.perfdata.$metric$.value*
 
 ``host_name_template``
 Macro template for the host name 
-* *$host.name$.host.$host.check_command$.perfdata*
+* *icinga2.$host.name$.host.$host.check_command$.perfdata.$metric$.value*
 
 ``graphite_args_template ``
 Macro template for the small image where $target$ is replaced with the metric name 
