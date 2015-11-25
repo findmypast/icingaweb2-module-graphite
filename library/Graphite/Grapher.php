@@ -17,9 +17,8 @@ class Grapher extends GrapherHook
     protected $hasTinyPreviews = true;
     protected $graphiteConfig;
     protected $baseUrl = 'http://graphite.com/render/?';
-    protected $metricPrefix = 'icinga';
-    protected $serviceMacro = '$host.name$.services.$service.name$.$service.check_command$.perfdata.value';
-    protected $hostMacro = '$host.name$.host.$host.check_command$.perfdata.value';
+    protected $serviceMacro = 'icinga2.$host.name$.services.$service.name$.$service.check_command$.perfdata.$metric$.value';
+    protected $hostMacro = 'icinga2.$host.name$.host.$host.check_command$.perfdata.$metric$.value';
     protected $imageUrlMacro = '&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF';
     protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected';
     protected $legacyMode = false;
@@ -28,7 +27,6 @@ class Grapher extends GrapherHook
     {
         $cfg = Config::module('graphite')->getSection('graphite');
         $this->baseUrl = rtrim($cfg->get('base_url', $this->baseUrl), '/');
-        $this->metricPrefix = $cfg->get('metric_prefix', $this->metricPrefix);
         $this->legacyMode = filter_var($cfg->get('legacy_mode', $this->legacyMode), FILTER_VALIDATE_BOOLEAN);
         $this->serviceMacro = $cfg->get('service_name_template', $this->serviceMacro);
         $this->hostMacro = $cfg->get('host_name_template', $this->hostMacro);
@@ -98,7 +96,7 @@ class Grapher extends GrapherHook
     private function getPreviewImage($host, $service, $metric)
     {
 
-        if ($host != Null){
+        if ($host != null){
             $target = Macro::resolveMacros($this->hostMacro, $host, $this->legacyMode);
         } elseif  ($service != null ){
             $target = Macro::resolveMacros($this->serviceMacro, $service, $this->legacyMode);
@@ -106,9 +104,7 @@ class Grapher extends GrapherHook
            $target = '';
         }
 
-        $target .= '.'. Macro::escapeMetric($metric, $this->legacyMode);
-
-        $target = $this->metricPrefix . "." . $target;
+        $target = Macro::resolveMacros($target, array("metric"=>$metric), $this->legacyMode, false);
 
         $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target), $this->legacyMode, false);
 

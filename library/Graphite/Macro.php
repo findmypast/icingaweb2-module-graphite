@@ -71,12 +71,14 @@ class Macro
 
         $translated = self::translateTerm($macro);
 
-        if (array_key_exists($translated, $object->customvars)) {
-            return $object->customvars[$translated];
-        }
+        if ($translated !== NULL) {
+            if (array_key_exists($translated, $object->customvars)) {
+                return $object->customvars[$translated];
+            }
 
-        if  ($object->{$translated} !== false) {
-            return $object->{$translated};
+            if  ($object->{$translated} !== false) {
+               return $object->{$translated};
+            }
         }
 
         return $macro;
