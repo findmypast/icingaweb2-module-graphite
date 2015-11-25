@@ -33,6 +33,9 @@ class Grapher extends GrapherHook
     protected $colorList = "049BAF,EE1D00,04B06E,0446B0,871E10,CB315D,B06904,B0049C";
     protected $iframeWidth = "800px";
     protected $iframeHeight = "700px";
+    protected $remoteFetch = false;
+    protected $remoteVerifyPeer = true;
+    protected $remoteVerifyPeerName = true;
 
     protected function init()
     {
@@ -49,6 +52,10 @@ class Grapher extends GrapherHook
         $this->areaAlpha = $cfg->get('graphite_area_alpha', $this->areaAlpha);
         $this->summarizeInterval = $cfg->get('graphite_summarize_interval', $this->summarizeInterval);
         $this->colorList = $cfg->get('graphite_color_list', $this->colorList);
+
+        $this->remoteFetch = filter_var($cfg->get('remote_fetch', $this->remoteFetch), FILTER_VALIDATE_BOOLEAN);
+        $this->remoteVerifyPeer = filter_var($cfg->get('remote_verify_peer', $this->remoteVerifyPeer), FILTER_VALIDATE_BOOLEAN);
+        $this->remoteVerifyPeerName = filter_var($cfg->get('remote_verify_peer_name', $this->remoteVerifyPeerName), FILTER_VALIDATE_BOOLEAN);
     }
 
     private function parseGrapherConfig($graphite_vars)
@@ -114,24 +121,22 @@ class Grapher extends GrapherHook
             ), $this->legacyMode, false, false);
         }
         $target = Macro::resolveMacros($target, array("metric"=>$metric), $this->legacyMode, true, true);
-        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array(
-            "target" => $target,
-            "areaMode" => $this->areaMode,
-            "areaAlpha" => $this->areaAlpha,
-            "colorList" => $this->colorList
-        ), $this->legacyMode);
-        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array(
-            "target" => $target,
-            "areaMode" => $this->areaMode,
-            "areaAlpha" => $this->areaAlpha,
-            "colorList" => $this->colorList
-        ), $this->legacyMode);
+        $imgUrl = $this->getImgUrl($target);
 
-        $url = Url::fromPath('graphite', array(
-            'graphite_url' => urlencode($largeImgUrl),
-            'graphite_iframe_w' => urlencode($this->iframeWidth),
-            'graphite_iframe_h' => urlencode($this->iframeHeight)
-        ));
+        if ($this->remoteFetch) {
+            $imgUrl = $this->inlineImage($imgUrl);
+            $url = Url::fromPath('graphite', array(
+                    'graphite_url' => urlencode($target),
+                    'graphite_iframe_w' => urlencode($this->iframeWidth),
+                    'graphite_iframe_h' => urlencode($this->iframeHeight)
+            ));
+        } else {
+            $url = Url::fromPath('graphite', array(
+                    'graphite_url' => urlencode($this->getLargeImgUrl($target)),
+                    'graphite_iframe_w' => urlencode($this->iframeWidth),
+                    'graphite_iframe_h' => urlencode($this->iframeHeight)
+            ));
+        }
 
         $html = '<a href="%s" title="%s"><img src="%s" alt="%s" width="300" height="120" /></a>';
 
@@ -190,5 +195,46 @@ class Grapher extends GrapherHook
 
         $html .= "</tbody></table>\n";
         return $html;
+    }
+
+    public function inlineImage($url) {
+        $ctx = stream_context_create(array('ssl' => array("verify_peer"=>$this->remoteVerifyPeer, "verify_peer_name"=>$this->remoteVerifyPeerName)));
+
+        $img = @file_get_contents($url, false, $ctx);
+        $error = error_get_last();
+        if ($error === null) {
+            return 'data:image/png;base64,'.base64_encode($img);
+        } else {
+            throw new \ErrorException($error['message']);
+        }
+    }
+
+    public function getRemoteFetch() {
+        return $this->remoteFetch;
+    }
+
+    public function getImgUrl($target) {
+    return $this->baseUrl . Macro::resolveMacros(
+        $this->imageUrlMacro, array(
+                "target" => $target,
+                "areaMode" => $this->areaMode,
+                "areaAlpha" => $this->areaAlpha,
+                "colorList" => $this->colorList
+        ), $this->legacyMode, false);
+    }
+
+    public function getLargeImgUrl($target, $from=false) {
+        $url = $this->baseUrl . Macro::resolveMacros(
+            $this->largeImageUrlMacro, array(
+                "target" => $target,
+                "areaMode" => $this->areaMode,
+                "areaAlpha" => $this->areaAlpha,
+                "colorList" => $this->colorList
+            ), $this->legacyMode,  false);
+        if ($from !== false) {
+            $url = $url.'&from='.$from;
+        }
+
+        return $url;
     }
 }
