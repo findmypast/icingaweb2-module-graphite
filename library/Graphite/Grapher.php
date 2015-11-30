@@ -104,7 +104,7 @@ class Grapher extends GrapherHook
            $target = '';
         }
 
-        $target = Macro::resolveMacros($target, array("metric"=>$metric), $this->legacyMode, false);
+        $target = Macro::resolveMacros($target, array("metric"=>$metric), $this->legacyMode);
 
         $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target), $this->legacyMode, false);
 
