@@ -103,13 +103,11 @@ class Macro
     private static function translateTerm($term){
 
         if (substr($term, 0, strlen('host.vars.')) === 'host.vars.'){
-            $term = str_replace('host.vars.','',$term);
-            return ucwords(str_replace('_', ' ', strtolower($cv->varname)));
+            return str_replace('host.vars.','',$term);
         }
 
         if (substr($term, 0, strlen('service.vars.')) === 'service.vars.'){
-            $term = str_replace('service.vars.','',$term);
-            return ucwords(str_replace('_', ' ', strtolower($cv->varname)));
+            return str_replace('service.vars.','',$term);
         }
 
         if (substr($term, 0, strlen('service.')) === 'service.'){
