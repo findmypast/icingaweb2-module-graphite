@@ -97,18 +97,18 @@ class Grapher extends GrapherHook
     {
 
         if ($host != null){
-            $target = Macro::resolveMacros($this->hostMacro, $host, $this->legacyMode);
+            $target = Macro::resolveMacros($this->hostMacro, $host, $this->legacyMode, true);
         } elseif  ($service != null ){
-            $target = Macro::resolveMacros($this->serviceMacro, $service, $this->legacyMode);
+            $target = Macro::resolveMacros($this->serviceMacro, $service, $this->legacyMode, true);
         } else {
            $target = '';
         }
 
-        $target = Macro::resolveMacros($target, array("metric"=>$metric), $this->legacyMode);
+        $target = Macro::resolveMacros($target, array("metric"=>$metric), $this->legacyMode, true, true);
 
-        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target), $this->legacyMode, false);
+        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target), $this->legacyMode);
 
-        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target), $this->legacyMode,  false);
+        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target), $this->legacyMode);
 
         $url = Url::fromPath('graphite', array(
             'graphite_url' => urlencode($largeImgUrl)

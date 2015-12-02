@@ -28,7 +28,7 @@ class Macro
      *
      * @return  string                                  The substituted or unchanged string
      */
-    public static function resolveMacros($input, $object, $legacyMode, $escape = true)
+    public static function resolveMacros($input, $object, $legacyMode, $escape = false , $isMacro = false)
     {
         $matches = array();
         if (preg_match_all('@\$([^\$\s]+)\$@', $input, $matches)) {
@@ -36,8 +36,8 @@ class Macro
                 $newValue = self::resolveMacro($value, $object);
                 if ($newValue !== $value) {
                     if ($escape){
-                      $newValue = self::escapeMetric($newValue, $legacyMode);
-                    }                    
+                      $newValue = self::escapeMetric($newValue, $legacyMode, $isMacro);
+                    }
                     $input = str_replace($matches[0][$key], $newValue, $input);
                 }
             }
@@ -84,12 +84,15 @@ class Macro
         return $macro;
     }
 
-    public static function escapeMetric($str, $legacyMode)
-    {       
+    public static function escapeMetric($str, $legacyMode, $ismetric)
+    {
         if ($legacyMode) {
             $str=str_replace('-','_',$str);
+            $str=str_replace('.','_',$str);
+        } elseif (!$ismetric){
+            $str=str_replace('.','_',$str);
         }
-        $str=str_replace('.','_',$str);
+
         $str=str_replace(' ','_',$str);
         $str=str_replace('\\','_',$str);
         $str=str_replace('/','_',$str);
@@ -115,6 +118,6 @@ class Macro
 
         if (substr($term, 0, strlen('host.')) === 'host.'){
             return str_replace('host.','host_',$term);
-        }     
+        }
     }
 }
