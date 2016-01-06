@@ -16,7 +16,7 @@ class Graphite_ConfigController extends ModuleActionController
 
         $this->view->escapedHint = sprintf(
             $hintHtml,
-            '<b>http://graphite.dun.fh/render/?</b>',
+            '<b>http://graphite.com/render/?</b>',
             '<b>icinga</b>',
             '<b>' . $this->Config()->getConfigFile() . '</b>'
         );
