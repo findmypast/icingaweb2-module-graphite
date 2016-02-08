@@ -57,16 +57,19 @@ In our example there are 6 metrics available in perfdata from the check_tomcat s
 * currentThreadsBusy
 
 To just see the basic graphs of used heap and currentThreadCount, add the following to your Service definition.
-	vars.graphite_keys = ["used", "currentThreadCount"]
+
+    vars.graphite_keys = ["used", "currentThreadCount"]
 
 ### Composite Graphs
 In some cases, composite graphs are more useful.  Used Heap doesn't make sense unless you know the Max Heap size.  To create some useful composite graphs, add the following to your Service definition.
-	vars.graphite_keys = ["{used,max}", "{currentThreadsBusy,currentThreadCount}"]
+
+    vars.graphite_keys = ["{used,max}", "{currentThreadsBusy,currentThreadCount}"]
 
 ### Graph Labels
 Composite graph definitions can get long and cumbersome, so you can define Labels for each graph.  To make short, user-friendly labels for the composite graphs, add the following to your Service definition.
-	vars.graphite_keys = ["{used,max}", "{currentThreadsBusy,currentThreadCount}"]
-	vars.graphite_labels = ["Heap", "Threads"]
+
+    vars.graphite_keys = ["{used,max}", "{currentThreadsBusy,currentThreadCount}"]
+    vars.graphite_labels = ["Heap", "Threads"]
 
 ## Hats off to
 
