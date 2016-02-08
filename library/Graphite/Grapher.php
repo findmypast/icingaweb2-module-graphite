@@ -53,12 +53,20 @@ class Grapher extends GrapherHook
         if ( ! $object->$perfdata_property ) return '';
 
         $object->fetchCustomvars();
-        if (array_key_exists("graphite_keys", $object->customvars))
+        if (array_key_exists("graphite_keys", $object->customvars)) {
             $graphiteKeys = $object->customvars["graphite_keys"];
-        else {
+            $graphiteLabels = $object->customvars["graphite_keys"];
+            if (array_key_exists("graphite_labels", $object->customvars)) {
+		if (count($object->customvars["graphite_keys"]) == count($object->customvars["graphite_labels"])) {
+                    $graphiteLabels = $object->customvars["graphite_labels"];
+                }
+            }
+        } else {
             $graphiteKeys = array();
-            foreach (PerfdataSet::fromString($object->perfdata)->asArray() as $pd)
+            foreach (PerfdataSet::fromString($object->perfdata)->asArray() as $pd) {
                 $graphiteKeys[] = $pd->getLabel();
+                $graphiteLabels[] = $pd->getLabel();
+            }
         }
 
         if ($object instanceof Host) {
@@ -74,11 +82,11 @@ class Grapher extends GrapherHook
         $html = "<table class=\"avp newsection\">\n"
                ."<tbody>\n";
 
-        foreach ($graphiteKeys as $metric) {
+        for ($key = 0; $key < count($graphiteKeys); $key++) {
             $html .= "<tr><th>\n"
-                  . "$metric\n"
+                  . "$graphiteLabels[$key]\n"
                   . '</th><td>'
-                  . $this->getPreviewImage($host, $service, $metric)
+                  . $this->getPreviewImage($host, $service, $graphiteKeys[$key])
                   . "</td>\n"
                   . "<tr>\n";
         }
