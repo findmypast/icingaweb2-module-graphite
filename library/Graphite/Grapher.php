@@ -22,6 +22,7 @@ class Grapher extends GrapherHook
     protected $imageUrlMacro = '&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF';
     protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected';
     protected $legacyMode = false;
+    protected $areaMode = "all";
 
     protected function init()
     {
@@ -69,6 +70,10 @@ class Grapher extends GrapherHook
             }
         }
 
+	if (array_key_exists("graphite_area_mode", $object->customvars)) {
+	    $this->areaMode = $object->customvars["graphite_area_mode"];
+	}
+
         if ($object instanceof Host) {
             $host = $object;
             $service = null;
@@ -104,6 +109,8 @@ class Grapher extends GrapherHook
     private function getPreviewImage($host, $service, $metric)
     {
 
+	$areaMode = "stacked";
+
         if ($host != null){
             $target = Macro::resolveMacros($this->hostMacro, $host, $this->legacyMode, true);
         } elseif  ($service != null ){
@@ -114,9 +121,9 @@ class Grapher extends GrapherHook
 
         $target = Macro::resolveMacros($target, array("metric"=>$metric), $this->legacyMode, true, true);
 
-        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target), $this->legacyMode);
+        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode), $this->legacyMode);
 
-        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target), $this->legacyMode);
+        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode), $this->legacyMode);
 
         $url = Url::fromPath('graphite', array(
             'graphite_url' => urlencode($largeImgUrl)
