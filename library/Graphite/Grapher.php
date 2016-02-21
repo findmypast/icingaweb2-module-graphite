@@ -23,6 +23,8 @@ class Grapher extends GrapherHook
     protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected';
     protected $legacyMode = false;
     protected $areaMode = "all";
+    protected $iframeWidth = "800px";
+    protected $iframeHeight = "700px";
 
     protected function init()
     {
@@ -74,6 +76,14 @@ class Grapher extends GrapherHook
 	    $this->areaMode = $object->customvars["graphite_area_mode"];
 	}
 
+	if (array_key_exists("graphite_iframe_w", $object->customvars)) {
+	    $this->iframeWidth= $object->customvars["graphite_iframe_w"];
+	}
+
+	if (array_key_exists("graphite_iframe_h", $object->customvars)) {
+	    $this->iframeHeight= $object->customvars["graphite_iframe_h"];
+	}
+
         if ($object instanceof Host) {
             $host = $object;
             $service = null;
@@ -109,8 +119,6 @@ class Grapher extends GrapherHook
     private function getPreviewImage($host, $service, $metric)
     {
 
-	$areaMode = "stacked";
-
         if ($host != null){
             $target = Macro::resolveMacros($this->hostMacro, $host, $this->legacyMode, true);
         } elseif  ($service != null ){
@@ -126,8 +134,11 @@ class Grapher extends GrapherHook
         $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode), $this->legacyMode);
 
         $url = Url::fromPath('graphite', array(
-            'graphite_url' => urlencode($largeImgUrl)
+            'graphite_url' => urlencode($largeImgUrl),
+	    'graphite_iframe_w' => urlencode($this->iframeWidth),
+	    'graphite_iframe_h' => urlencode($this->iframeHeight)
         ));
+
 
         $html = '<a href="%s" title="%s"><img src="%s" alt="%s" width="300" height="120" /></a>';
 
