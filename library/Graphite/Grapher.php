@@ -28,7 +28,6 @@ class Grapher extends GrapherHook
     protected $iframeWidth = "800px";
     protected $iframeHeight = "700px";
 
-
     protected function init()
     {
         $cfg = Config::module('graphite')->getSection('graphite');
@@ -38,8 +37,69 @@ class Grapher extends GrapherHook
         $this->hostMacro = $cfg->get('host_name_template', $this->hostMacro);
         $this->imageUrlMacro = $cfg->get('graphite_args_template', $this->imageUrlMacro);
         $this->largeImageUrlMacro = $cfg->get('graphite_large_args_template', $this->largeImageUrlMacro);
-	$this->iframeWidth = $cfg->get('graphite_iframe_w', $this->iframeWidth);
-	$this->iframeHeight = $cfg->get('graphite_iframe_h', $this->iframeHeight);
+	      $this->iframeWidth = $cfg->get('graphite_iframe_w', $this->iframeWidth);
+	      $this->iframeHeight = $cfg->get('graphite_iframe_h', $this->iframeHeight);
+    }
+
+    private function parseGrapherConfig($graphite_vars)
+    {
+      	if (!empty($graphite_vars)) {
+        		if (!empty($graphite_vars->area_mode)) {
+        	    		$this->areaMode = $graphite_vars->area_mode;
+        		}
+      	}
+    }
+
+    private function getKeysAndLabels($vars)
+    {
+        if (array_key_exists("graphite_keys", $vars)) {
+            $this->graphiteKeys = $vars["graphite_keys"];
+            $this->graphiteLabels = $vars["graphite_keys"];
+            if (array_key_exists("graphite_labels", $vars)) {
+		            if (count($vars["graphite_keys"]) == count($vars["graphite_labels"])) {
+                    $this->graphiteLabels = $vars["graphite_labels"];
+                }
+            }
+        }
+    }
+
+    private function getPerfdataKeys($object)
+    {
+        foreach (PerfdataSet::fromString($object->perfdata)->asArray() as $pd) {
+            $this->graphiteKeys[] = $pd->getLabel();
+            $this->graphiteLabels[] = $pd->getLabel();
+        }
+    }
+
+    private function getPreviewImage($host, $service, $metric)
+    {
+        if ($host != null){
+            $target = Macro::resolveMacros($this->hostMacro, $host, $this->legacyMode, true);
+        } elseif  ($service != null ){
+            $target = Macro::resolveMacros($this->serviceMacro, $service, $this->legacyMode, true);
+        } else {
+           $target = '';
+        }
+
+        $target = Macro::resolveMacros($target, array("metric"=>$metric), $this->legacyMode, true, true);
+        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode), $this->legacyMode);
+        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode), $this->legacyMode);
+
+        $url = Url::fromPath('graphite', array(
+            'graphite_url' => urlencode($largeImgUrl),
+      	    'graphite_iframe_w' => urlencode($this->iframeWidth),
+      	    'graphite_iframe_h' => urlencode($this->iframeHeight)
+        ));
+
+        $html = '<a href="%s" title="%s"><img src="%s" alt="%s" width="300" height="120" /></a>';
+
+        return sprintf(
+            $html,
+            $url,
+            $metric,
+            $imgUrl,
+            $metric
+       );
     }
 
     public function has(MonitoredObject $object)
@@ -51,51 +111,7 @@ class Grapher extends GrapherHook
         } else {
             return false;
         }
-
         return true;
-    }
-
-    public function parseGrapherConfig($graphite_vars = array())
-    {
-
-	if (!empty($graphite_vars)) {
-/*
-		if (!empty($graphite_vars->iframe_w)) {
-	    		$this->iframeWidth = $graphite_vars->iframe_w;
-		}
-		if (!empty($graphite_vars->iframe_h)) {
-	    		$this->iframeHeight = $graphite_vars->iframe_h;
-		}
-*/
-		if (!empty($graphite_vars->area_mode)) {
-	    		$this->areaMode = $graphite_vars->area_mode;
-		}
-
-	}
-
-    }
-
-    public function getKeysAndLabels($graphite_vars = array(), $vars) 
-    {
-
-        if (array_key_exists("graphite_keys", $vars)) {
-            $this->graphiteKeys = $vars["graphite_keys"];
-            $this->graphiteLabels = $vars["graphite_keys"];
-            if (array_key_exists("graphite_labels", $vars)) {
-		if (count($vars["graphite_keys"]) == count($vars["graphite_labels"])) {
-                    $this->graphiteLabels = $vars["graphite_labels"];
-                }
-            }
-        }
-
-    }
-
-    public function getPerfdataKeys($object) 
-    {
-    	foreach (PerfdataSet::fromString($object->perfdata)->asArray() as $pd) {
-            $this->graphiteKeys[] = $pd->getLabel();
-            $this->graphiteLabels[] = $pd->getLabel();
-        }
     }
 
     public function getPreviewHtml(MonitoredObject $object)
@@ -106,15 +122,13 @@ class Grapher extends GrapherHook
         $object->fetchCustomvars();
 
         if (array_key_exists("graphite", $object->customvars)) {
-		$this->parseGrapherConfig($object->customvars["graphite"]);
-		$this->getKeysAndLabels($object->customvars["graphite"], $object->customvars);
-	} else {
-		$this->getKeysAndLabels(array(), $object->customvars);
-	}
+            $this->parseGrapherConfig($object->customvars["graphite"]);
+        }
 
-	if (empty($this->graphiteKeys)) {
-		$this->getPerfDataKeys($object);
-	}
+        $this->getKeysAndLabels(array(), $object->customvars);
+        if (empty($this->graphiteKeys)) {
+          $this->getPerfDataKeys($object);
+        }
 
         if ($object instanceof Host) {
             $host = $object;
@@ -140,45 +154,5 @@ class Grapher extends GrapherHook
 
         $html .= "</tbody></table>\n";
         return $html;
-    }
-
-    // Currently unused,
-    public function getSmallPreviewImage($host, $service = null)
-    {
-        return null;
-    }
-
-    private function getPreviewImage($host, $service, $metric)
-    {
-
-        if ($host != null){
-            $target = Macro::resolveMacros($this->hostMacro, $host, $this->legacyMode, true);
-        } elseif  ($service != null ){
-            $target = Macro::resolveMacros($this->serviceMacro, $service, $this->legacyMode, true);
-        } else {
-           $target = '';
-        }
-
-        $target = Macro::resolveMacros($target, array("metric"=>$metric), $this->legacyMode, true, true);
-
-        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode), $this->legacyMode);
-
-        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode), $this->legacyMode);
-
-        $url = Url::fromPath('graphite', array(
-            'graphite_url' => urlencode($largeImgUrl),
-	    'graphite_iframe_w' => urlencode($this->iframeWidth),
-	    'graphite_iframe_h' => urlencode($this->iframeHeight)
-        ));
-
-        $html = '<a href="%s" title="%s"><img src="%s" alt="%s" width="300" height="120" /></a>';
-
-        return sprintf(
-            $html,
-            $url,
-            $metric,
-            $imgUrl,
-            $metric
-       );
     }
 }
