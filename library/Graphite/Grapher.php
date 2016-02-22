@@ -22,9 +22,12 @@ class Grapher extends GrapherHook
     protected $imageUrlMacro = '&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF';
     protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected';
     protected $legacyMode = false;
+    protected $graphiteKeys = array();
+    protected $graphiteLabels = array();
     protected $areaMode = "all";
     protected $iframeWidth = "800px";
     protected $iframeHeight = "700px";
+
 
     protected function init()
     {
@@ -50,38 +53,64 @@ class Grapher extends GrapherHook
         return true;
     }
 
+    public function parseGrapherConfig($graphite_vars = array())
+    {
+
+	if (!empty($graphite_vars)) {
+
+		if (!empty($graphite_vars->iframe_w)) {
+	    		$this->iframeWidth = $graphite_vars->iframe_w;
+		}
+		if (!empty($graphite_vars->iframe_h)) {
+	    		$this->iframeHeight = $graphite_vars->iframe_h;
+		}
+		if (!empty($graphite_vars->area_mode)) {
+	    		$this->areaMode = $graphite_vars->area_mode;
+		}
+
+	}
+
+    }
+
+    public function getKeysAndLabels($graphite_vars = array(), $vars) 
+    {
+
+        if (array_key_exists("graphite_keys", $vars)) {
+            $this->graphiteKeys = $vars["graphite_keys"];
+            $this->graphiteLabels = $vars["graphite_keys"];
+            if (array_key_exists("graphite_labels", $vars)) {
+		if (count($vars["graphite_keys"]) == count($vars["graphite_labels"])) {
+                    $this->graphiteLabels = $vars["graphite_labels"];
+                }
+            }
+        }
+
+    }
+
+    public function getPerfdataKeys($object) 
+    {
+    	foreach (PerfdataSet::fromString($object->perfdata)->asArray() as $pd) {
+            $this->graphiteKeys[] = $pd->getLabel();
+            $this->graphiteLabels[] = $pd->getLabel();
+        }
+    }
+
     public function getPreviewHtml(MonitoredObject $object)
     {
         $perfdata_property = $object->getType() . "_process_perfdata";
         if ( ! $object->$perfdata_property ) return '';
 
         $object->fetchCustomvars();
-        if (array_key_exists("graphite_keys", $object->customvars)) {
-            $graphiteKeys = $object->customvars["graphite_keys"];
-            $graphiteLabels = $object->customvars["graphite_keys"];
-            if (array_key_exists("graphite_labels", $object->customvars)) {
-		if (count($object->customvars["graphite_keys"]) == count($object->customvars["graphite_labels"])) {
-                    $graphiteLabels = $object->customvars["graphite_labels"];
-                }
-            }
-        } else {
-            $graphiteKeys = array();
-            foreach (PerfdataSet::fromString($object->perfdata)->asArray() as $pd) {
-                $graphiteKeys[] = $pd->getLabel();
-                $graphiteLabels[] = $pd->getLabel();
-            }
-        }
 
-	if (array_key_exists("graphite_area_mode", $object->customvars)) {
-	    $this->areaMode = $object->customvars["graphite_area_mode"];
+        if (array_key_exists("graphite", $object->customvars)) {
+		$this->parseGrapherConfig($object->customvars["graphite"]);
+		$this->getKeysAndLabels($object->customvars["graphite"], $object->customvars);
+	} else {
+		$this->getKeysAndLabels(array(), $object->customvars);
 	}
 
-	if (array_key_exists("graphite_iframe_w", $object->customvars)) {
-	    $this->iframeWidth= $object->customvars["graphite_iframe_w"];
-	}
-
-	if (array_key_exists("graphite_iframe_h", $object->customvars)) {
-	    $this->iframeHeight= $object->customvars["graphite_iframe_h"];
+	if (empty($this->graphiteKeys)) {
+		$this->getPerfDataKeys($object);
 	}
 
         if ($object instanceof Host) {
@@ -97,11 +126,11 @@ class Grapher extends GrapherHook
         $html = "<table class=\"avp newsection\">\n"
                ."<tbody>\n";
 
-        for ($key = 0; $key < count($graphiteKeys); $key++) {
+        for ($key = 0; $key < count($this->graphiteKeys); $key++) {
             $html .= "<tr><th>\n"
-                  . "$graphiteLabels[$key]\n"
+                  . $this->graphiteLabels[$key]
                   . '</th><td>'
-                  . $this->getPreviewImage($host, $service, $graphiteKeys[$key])
+                  . $this->getPreviewImage($host, $service, $this->graphiteKeys[$key])
                   . "</td>\n"
                   . "<tr>\n";
         }
@@ -138,7 +167,6 @@ class Grapher extends GrapherHook
 	    'graphite_iframe_w' => urlencode($this->iframeWidth),
 	    'graphite_iframe_h' => urlencode($this->iframeHeight)
         ));
-
 
         $html = '<a href="%s" title="%s"><img src="%s" alt="%s" width="300" height="120" /></a>';
 
