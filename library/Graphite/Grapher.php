@@ -38,6 +38,8 @@ class Grapher extends GrapherHook
         $this->hostMacro = $cfg->get('host_name_template', $this->hostMacro);
         $this->imageUrlMacro = $cfg->get('graphite_args_template', $this->imageUrlMacro);
         $this->largeImageUrlMacro = $cfg->get('graphite_large_args_template', $this->largeImageUrlMacro);
+	$this->iframeWidth = $cfg->get('graphite_iframe_w', $this->iframeWidth);
+	$this->iframeHeight = $cfg->get('graphite_iframe_h', $this->iframeHeight);
     }
 
     public function has(MonitoredObject $object)
@@ -57,13 +59,14 @@ class Grapher extends GrapherHook
     {
 
 	if (!empty($graphite_vars)) {
-
+/*
 		if (!empty($graphite_vars->iframe_w)) {
 	    		$this->iframeWidth = $graphite_vars->iframe_w;
 		}
 		if (!empty($graphite_vars->iframe_h)) {
 	    		$this->iframeHeight = $graphite_vars->iframe_h;
 		}
+*/
 		if (!empty($graphite_vars->area_mode)) {
 	    		$this->areaMode = $graphite_vars->area_mode;
 		}
