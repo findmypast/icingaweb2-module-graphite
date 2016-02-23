@@ -1,3 +1,8 @@
+0.0.0.5
+=========
+* Added labels for metrics
+* Added graphite area overload option
+
 0.0.0.4
 =========
 * Removed metric_prefix from config

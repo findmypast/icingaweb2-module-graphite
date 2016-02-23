@@ -44,6 +44,33 @@ Macro template for the small image where $target$ is replaced with the metric na
 Macro template for the large image 
 * *&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected*
 
+## Customizing
+As mentioned in General Information above, you can use vars.graphite_keys to limit [or define] the graphs you want to see.
+
+### Limiting graphs
+In our example there are 6 metrics available in perfdata from the check_tomcat script:
+* used
+* free
+* max
+* currentThreadCount
+* maxThreads
+* currentThreadsBusy
+
+To just see the basic graphs of used heap and currentThreadCount, add the following to your Service definition.
+
+    vars.graphite_keys = ["used", "currentThreadCount"]
+
+### Composite Graphs
+In some cases, composite graphs are more useful.  Used Heap doesn't make sense unless you know the Max Heap size.  To create some useful composite graphs, add the following to your Service definition.
+
+    vars.graphite_keys = ["{used,max}", "{currentThreadsBusy,currentThreadCount}"]
+
+### Graph Labels
+Composite graph definitions can get long and cumbersome, so you can define Labels for each graph.  To make short, user-friendly labels for the composite graphs, add the following to your Service definition.
+
+    vars.graphite_keys = ["{used,max}", "{currentThreadsBusy,currentThreadCount}"]
+    vars.graphite_labels = ["Heap", "Threads"]
+
 ## Hats off to
 
 This module borrows a lot from https://github.com/Icinga/icingaweb2-module-pnp4nagios

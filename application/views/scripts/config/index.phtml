@@ -20,5 +20,7 @@ host_name_template = "icinga2.$host.name$.host.$host.check_command$.perfdata.$me
 graphite_args_template = "&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF"
 ;this template is used for the large image, macro $target$ can used.
 ;graphite_large_args_template = "&target=alias(color($target$_warn,'yellow'),'warning')&target=alias(color($target$_crit,'red'),'critical')&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected"
+graphite_iframe_w=800px
+graphite_iframe_h=700px
 </pre>
 </div>
