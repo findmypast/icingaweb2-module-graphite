@@ -37,17 +37,17 @@ class Grapher extends GrapherHook
         $this->hostMacro = $cfg->get('host_name_template', $this->hostMacro);
         $this->imageUrlMacro = $cfg->get('graphite_args_template', $this->imageUrlMacro);
         $this->largeImageUrlMacro = $cfg->get('graphite_large_args_template', $this->largeImageUrlMacro);
-	      $this->iframeWidth = $cfg->get('graphite_iframe_w', $this->iframeWidth);
-	      $this->iframeHeight = $cfg->get('graphite_iframe_h', $this->iframeHeight);
+        $this->iframeWidth = $cfg->get('graphite_iframe_w', $this->iframeWidth);
+        $this->iframeHeight = $cfg->get('graphite_iframe_h', $this->iframeHeight);
     }
 
     private function parseGrapherConfig($graphite_vars)
     {
-      	if (!empty($graphite_vars)) {
-        		if (!empty($graphite_vars->area_mode)) {
-        	    		$this->areaMode = $graphite_vars->area_mode;
-        		}
-      	}
+        if (!empty($graphite_vars)) {
+            if (!empty($graphite_vars->area_mode)) {
+                $this->areaMode = $graphite_vars->area_mode;
+            }
+        }
     }
 
     private function getKeysAndLabels($vars)
@@ -56,7 +56,7 @@ class Grapher extends GrapherHook
             $this->graphiteKeys = $vars["graphite_keys"];
             $this->graphiteLabels = $vars["graphite_keys"];
             if (array_key_exists("graphite_labels", $vars)) {
-		            if (count($vars["graphite_keys"]) == count($vars["graphite_labels"])) {
+                if (count($vars["graphite_keys"]) == count($vars["graphite_labels"])) {
                     $this->graphiteLabels = $vars["graphite_labels"];
                 }
             }
@@ -87,8 +87,8 @@ class Grapher extends GrapherHook
 
         $url = Url::fromPath('graphite', array(
             'graphite_url' => urlencode($largeImgUrl),
-      	    'graphite_iframe_w' => urlencode($this->iframeWidth),
-      	    'graphite_iframe_h' => urlencode($this->iframeHeight)
+            'graphite_iframe_w' => urlencode($this->iframeWidth),
+            'graphite_iframe_h' => urlencode($this->iframeHeight)
         ));
 
         $html = '<a href="%s" title="%s"><img src="%s" alt="%s" width="300" height="120" /></a>';
@@ -99,26 +99,20 @@ class Grapher extends GrapherHook
             $metric,
             $imgUrl,
             $metric
-       );
+      );
     }
 
     public function has(MonitoredObject $object)
     {
-        if ($object instanceof Host) {
-            $service = '_HOST_';
-        } elseif ($object instanceof Service) {
-            $service = $object->service_description;
+        if (($object instanceof Host)||($object instanceof Service)) {
+            return true;
         } else {
             return false;
         }
-        return true;
     }
 
     public function getPreviewHtml(MonitoredObject $object)
     {
-        $perfdata_property = $object->getType() . "_process_perfdata";
-        if ( ! $object->$perfdata_property ) return '';
-
         $object->fetchCustomvars();
 
         if (array_key_exists("graphite", $object->customvars)) {
