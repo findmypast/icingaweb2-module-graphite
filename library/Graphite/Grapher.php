@@ -119,7 +119,7 @@ class Grapher extends GrapherHook
             $this->parseGrapherConfig($object->customvars["graphite"]);
         }
 
-        $this->getKeysAndLabels(array(), $object->customvars);
+        $this->getKeysAndLabels($object->customvars);
         if (empty($this->graphiteKeys)) {
           $this->getPerfDataKeys($object);
         }
