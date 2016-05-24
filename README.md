@@ -79,6 +79,16 @@ It is possible to fill the area below the graphed lines by adding the following 
 
 For details about the values, see doc here : http://graphite.readthedocs.io/en/latest/render_api.html?highlight=areaMode
 
+### Derivative graphs
+It is possible to plot derivative graphs instead of the measured values. This is useful for sensors giving increasing counters (like printer's page count, network IO bytes counter, ...). You can set it by adding the following to your Service definition.
+
+    vars.graphite.graph_type = "derivative" // default : "normal"
+
+You can customize it's output by setting the summarize interval and summarize function :
+
+    vars.graphite.summarize_interval = "60min" // default : "30min"
+    vars.graphite.summarize_func = "sum" // default : "sum"
+
 ## Hats off to
 
 This module borrows a lot from https://github.com/Icinga/icingaweb2-module-pnp4nagios
