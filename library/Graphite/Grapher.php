@@ -19,12 +19,13 @@ class Grapher extends GrapherHook
     protected $baseUrl = 'http://graphite.com/render/?';
     protected $serviceMacro = 'icinga2.$host.name$.services.$service.name$.$service.check_command$.perfdata.$metric$.value';
     protected $hostMacro = 'icinga2.$host.name$.host.$host.check_command$.perfdata.$metric$.value';
-    protected $imageUrlMacro = '&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF';
-    protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected';
+    protected $imageUrlMacro = '&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF&areaMode=$areaMode$&areaAlpha=$areaAlpha$';
+    protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected&areaMode=$areaMode$&areaAlpha=$areaAlpha$';
     protected $legacyMode = false;
     protected $graphiteKeys = array();
     protected $graphiteLabels = array();
     protected $areaMode = "none";
+    protected $areaAlpha = "0.5";
     protected $iframeWidth = "800px";
     protected $iframeHeight = "700px";
 
@@ -46,6 +47,9 @@ class Grapher extends GrapherHook
         if (!empty($graphite_vars)) {
             if (!empty($graphite_vars->area_mode)) {
                 $this->areaMode = $graphite_vars->area_mode;
+            }
+            if (!empty($graphite_vars->area_alpha)) {
+                $this->areaAlpha = $graphite_vars->area_alpha;
             }
         }
     }
@@ -82,8 +86,8 @@ class Grapher extends GrapherHook
         }
 
         $target = Macro::resolveMacros($target, array("metric"=>$metric), $this->legacyMode, true, true);
-        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode), $this->legacyMode);
-        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode), $this->legacyMode);
+        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode, "areaAlpha" => $this->areaAlpha), $this->legacyMode);
+        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode, "areaAlpha" => $this->areaAlpha), $this->legacyMode);
 
         $url = Url::fromPath('graphite', array(
             'graphite_url' => urlencode($largeImgUrl),

@@ -21,27 +21,27 @@ might be please check the module path in your Icinga Web 2 configuration.
 There are various configuration settings to tweak how the module behaves and ensure that it aligns with how the graphite carbon cache writer is set up:
 
 ``base_url``
-A fully formed url 
+A fully formed url
 * *http://graphite.com/render?*
 
 ``legacy_mode``
-To support older versions of the writer pre-icinga2 2.4 where true - is replaced with _ 
+To support older versions of the writer pre-icinga2 2.4 where true - is replaced with _
 * *false*
 
 ``service_name_template``
-Macro template for the service name 
+Macro template for the service name
 * *icinga2.$host.name$.services.$service.name$.$service.check_command$.perfdata.$metric$.value*
 
 ``host_name_template``
-Macro template for the host name 
+Macro template for the host name
 * *icinga2.$host.name$.host.$host.check_command$.perfdata.$metric$.value*
 
 ``graphite_args_template ``
-Macro template for the small image where $target$ is replaced with the metric name 
+Macro template for the small image where $target$ is replaced with the metric name
 * *&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF*
 
 ``graphite_large_args_template ``
-Macro template for the large image 
+Macro template for the large image
 * *&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected*
 
 ## Customizing
@@ -70,6 +70,14 @@ Composite graph definitions can get long and cumbersome, so you can define Label
 
     vars.graphite_keys = ["{used,max}", "{currentThreadsBusy,currentThreadCount}"]
     vars.graphite_labels = ["Heap", "Threads"]
+
+### Area mode
+It is possible to fill the area below the graphed lines by adding the following to your Service definition.
+
+    vars.graphite.area_mode = "all" // default : "none"
+    vars.graphite.area_alpha = "0.2" // default : "0.5"
+
+For details about the values, see doc here : http://graphite.readthedocs.io/en/latest/render_api.html?highlight=areaMode
 
 ## Hats off to
 
