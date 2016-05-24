@@ -24,7 +24,7 @@ class Grapher extends GrapherHook
     protected $legacyMode = false;
     protected $graphiteKeys = array();
     protected $graphiteLabels = array();
-    protected $areaMode = "all";
+    protected $areaMode = "none";
     protected $iframeWidth = "800px";
     protected $iframeHeight = "700px";
 
