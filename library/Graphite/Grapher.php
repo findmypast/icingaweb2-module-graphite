@@ -19,8 +19,8 @@ class Grapher extends GrapherHook
     protected $baseUrl = 'http://graphite.com/render/?';
     protected $serviceMacro = 'icinga2.$host.name$.services.$service.name$.$service.check_command$.perfdata.$metric$.value';
     protected $hostMacro = 'icinga2.$host.name$.host.$host.check_command$.perfdata.$metric$.value';
-    protected $imageUrlMacro = '&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF&areaMode=$areaMode$&areaAlpha=$areaAlpha$';
-    protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected&areaMode=$areaMode$&areaAlpha=$areaAlpha$';
+    protected $imageUrlMacro = '&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=$colorList$&areaMode=$areaMode$&areaAlpha=$areaAlpha$';
+    protected $largeImageUrlMacro = '&target=$target$&source=0&width=800&height=700&colorList=$colorList$&lineMode=connected&areaMode=$areaMode$&areaAlpha=$areaAlpha$';
     protected $DerivativeMacro = 'summarize(nonNegativeDerivative($target$),\'$summarizeInterval$\', \'$summarizeFunc$\')';
     protected $legacyMode = false;
     protected $graphiteKeys = array();
@@ -30,6 +30,7 @@ class Grapher extends GrapherHook
     protected $summarizeInterval = "30min";
     protected $summarizeFunc = "sum";
     protected $areaAlpha = "0.5";
+    protected $colorList = "049BAF";
     protected $iframeWidth = "800px";
     protected $iframeHeight = "700px";
 
@@ -63,6 +64,9 @@ class Grapher extends GrapherHook
             }
             if (!empty($graphite_vars->summarize_func)) {
                 $this->summarizeFunc = $graphite_vars->summarize_func;
+            }
+            if (!empty($graphite_vars->color_list)) {
+                $this->colorList = $graphite_vars->color_list;
             }
         }
     }
@@ -99,11 +103,25 @@ class Grapher extends GrapherHook
         }
 
         if ($this->graphType == "derivative"){
-            $target = Macro::resolveMacros($this->DerivativeMacro, array("target"=>$target, "summarizeInterval"=>$this->summarizeInterval, "summarizeFunc"=>$this->summarizeFunc), $this->legacyMode, false, false);
+            $target = Macro::resolveMacros($this->DerivativeMacro, array(
+                "target" => $target,
+                "summarizeInterval" => $this->summarizeInterval,
+                "summarizeFunc" => $this->summarizeFunc
+            ), $this->legacyMode, false, false);
         }
         $target = Macro::resolveMacros($target, array("metric"=>$metric), $this->legacyMode, true, true);
-        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode, "areaAlpha" => $this->areaAlpha), $this->legacyMode);
-        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array("target" => $target, "areaMode" => $this->areaMode, "areaAlpha" => $this->areaAlpha), $this->legacyMode);
+        $imgUrl = $this->baseUrl . Macro::resolveMacros($this->imageUrlMacro, array(
+            "target" => $target,
+            "areaMode" => $this->areaMode,
+            "areaAlpha" => $this->areaAlpha,
+            "colorList" => $this->colorList
+        ), $this->legacyMode);
+        $largeImgUrl = $this->baseUrl . Macro::resolveMacros($this->largeImageUrlMacro, array(
+            "target" => $target,
+            "areaMode" => $this->areaMode,
+            "areaAlpha" => $this->areaAlpha,
+            "colorList" => $this->colorList
+        ), $this->legacyMode);
 
         $url = Url::fromPath('graphite', array(
             'graphite_url' => urlencode($largeImgUrl),

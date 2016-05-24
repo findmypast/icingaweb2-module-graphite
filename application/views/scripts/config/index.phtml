@@ -17,9 +17,9 @@ host_name_template = "icinga2.$host.name$.host.$host.check_command$.perfdata.$me
 ;service_name_template = "icinga.$host.name$.services.$service.name$.$service.check_command$"
 ;host_name_template = "icinga.$host.name$.host.$host.check_command$"
 ;this template is used for the small image, macros $target$ , $areaMode$ and $areaAlpha$ can used.
-graphite_args_template = "&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF&areaMode=$areaMode$&areaAlpha=$areaAlpha$"
+graphite_args_template = "&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=$colorList$&areaMode=$areaMode$&areaAlpha=$areaAlpha$"
 ;this template is used for the large image, macros $target$ , $areaMode$ and $areaAlpha$ can used.
-;graphite_large_args_template = "&target=alias(color($target$_warn,'yellow'),'warning')&target=alias(color($target$_crit,'red'),'critical')&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected&areaMode=$areaMode$&areaAlpha=$areaAlpha$"
+;graphite_large_args_template = "&target=alias(color($target$_warn,'yellow'),'warning')&target=alias(color($target$_crit,'red'),'critical')&target=$target$&source=0&width=800&height=700&colorList=$colorList$&lineMode=connected&areaMode=$areaMode$&areaAlpha=$areaAlpha$"
 graphite_iframe_w=800px
 graphite_iframe_h=700px
 </pre>

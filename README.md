@@ -89,6 +89,13 @@ You can customize it's output by setting the summarize interval and summarize fu
     vars.graphite.summarize_interval = "60min" // default : "30min"
     vars.graphite.summarize_func = "sum" // default : "sum"
 
+### Color list
+It is possible to define which colors to use in the graph. You can set it by adding the following to your Service definition.
+
+    vars.graphite.color_list = "2d7db3,ee1d00" // default : "049BAF"
+
+This might be specialy useful in conjunction with `vars.graphite_keys` which plots several graphs in the same picture.
+
 ## Hats off to
 
 This module borrows a lot from https://github.com/Icinga/icingaweb2-module-pnp4nagios
