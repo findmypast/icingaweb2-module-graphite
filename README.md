@@ -7,6 +7,7 @@ Enable the graphite carbon cache writer: http://docs.icinga.org/icinga2/latest/d
 All perfdata metrics will be automatically included as graphs however if you just want a subset, the host or service then needs to have custom vars of the form vars.graphite_keys =["key1","key2"] where key1 key2 represent perfdata stats you want to see.
 
 You can configure the graphite metric keys formats by using standard-ish icinga2 macros.
+
 ## Installation
 
 Just extract this to your Icinga Web 2 module folder in a folder called graphite.
@@ -36,11 +37,11 @@ Macro template for the service name
 Macro template for the host name
 * *icinga2.$host.name$.host.$host.check_command$.perfdata.$metric$.value*
 
-``graphite_args_template ``
+``graphite_args_template``
 Macro template for the small image where $target$ is replaced with the metric name
 * *&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF*
 
-``graphite_large_args_template ``
+``graphite_large_args_template``
 Macro template for the large image
 * *&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected*
 
@@ -74,8 +75,13 @@ Composite graph definitions can get long and cumbersome, so you can define Label
 ### Area mode
 It is possible to fill the area below the graphed lines by adding the following to your Service definition.
 
-    vars.graphite.area_mode = "all" // default : "none"
-    vars.graphite.area_alpha = "0.2" // default : "0.5"
+    vars.graphite.area_mode = "all" // default : "all"
+    vars.graphite.area_alpha = "0.1" // default : "0.1"
+
+To set it globally, customize the configuration file with :
+
+    graphite_area_mode = all
+    graphite_area_alpha = 0.1
 
 For details about the values, see doc here : http://graphite.readthedocs.io/en/latest/render_api.html?highlight=areaMode
 
@@ -86,13 +92,21 @@ It is possible to plot derivative graphs instead of the measured values. This is
 
 You can customize it's output by setting the summarize interval and summarize function :
 
-    vars.graphite.summarize_interval = "60min" // default : "30min"
+    vars.graphite.summarize_interval = "60min" // default : "10min"
     vars.graphite.summarize_func = "sum" // default : "sum"
+
+To set it globally, customize the configuration file with :
+
+    graphite_summarize_interval = 10min
 
 ### Color list
 It is possible to define which colors to use in the graph. You can set it by adding the following to your Service definition.
 
-    vars.graphite.color_list = "2d7db3,ee1d00" // default : "049BAF"
+    vars.graphite.color_list = "2D7DB3,EE1D00" // default : "049BAF,EE1D00,04B06E,0446B0,871E10,CB315D,B06904,B0049C"
+
+To set it globally, customize the configuration file with :
+
+    graphite_color_list = 2D7DB3,EE1D00
 
 This might be specialy useful in conjunction with `vars.graphite_keys` which plots several graphs in the same picture.
 

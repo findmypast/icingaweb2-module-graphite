@@ -25,12 +25,12 @@ class Grapher extends GrapherHook
     protected $legacyMode = false;
     protected $graphiteKeys = array();
     protected $graphiteLabels = array();
-    protected $areaMode = "none";
+    protected $areaMode = "all";
     protected $graphType = "normal";
-    protected $summarizeInterval = "30min";
+    protected $summarizeInterval = "10min";
     protected $summarizeFunc = "sum";
-    protected $areaAlpha = "0.5";
-    protected $colorList = "049BAF";
+    protected $areaAlpha = "0.1";
+    protected $colorList = "049BAF,EE1D00,04B06E,0446B0,871E10,CB315D,B06904,B0049C";
     protected $iframeWidth = "800px";
     protected $iframeHeight = "700px";
 
@@ -45,6 +45,10 @@ class Grapher extends GrapherHook
         $this->largeImageUrlMacro = $cfg->get('graphite_large_args_template', $this->largeImageUrlMacro);
         $this->iframeWidth = $cfg->get('graphite_iframe_w', $this->iframeWidth);
         $this->iframeHeight = $cfg->get('graphite_iframe_h', $this->iframeHeight);
+        $this->areaMode = $cfg->get('graphite_area_mode', $this->areaMode);
+        $this->areaAlpha = $cfg->get('graphite_area_alpha', $this->areaAlpha);
+        $this->summarizeInterval = $cfg->get('graphite_summarize_interval', $this->summarizeInterval);
+        $this->colorList = $cfg->get('graphite_color_list', $this->colorList);
     }
 
     private function parseGrapherConfig($graphite_vars)
