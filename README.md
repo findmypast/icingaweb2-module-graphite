@@ -17,6 +17,25 @@ NB: It is best practice to install 3rd party modules into a distinct module
 folder like /usr/share/icingaweb2/modules. In case you don't know where this
 might be please check the module path in your Icinga Web 2 configuration.
 
+### Setting up carbon-cache for icinga2
+For graphs to show up correctly in Icinga Web 2, the storage schema for icinga2 needs to be added on the host running Graphite. Usually this configuration file can be found in `/etc/carbon/` or `/opt/graphite/conf/`, depending on how your Graphite server was installed.
+
+Edit the file `storage-schemas.conf` and add the following configuration example for icinga2:
+
+```
+[icinga2_internals]
+pattern = ^icinga2\..*\.(max_check_attempts|reachable|current_attempt|execution_time|latency|state|state_type)
+retentions = 5m:7d
+
+[icinga2_default]
+pattern = ^icinga2\.
+retentions = 5m:10d,30m:90d,360m:4y
+```
+
+**Hint**: Make sure to add these lines before any wild card directives (eg. `pattern = .*`), otherwise they will never match!
+
+Refer to [Configuring Carbon](http://graphite.readthedocs.io/en/latest/config-carbon.html?highlight=storage) for more details.
+
 ##Configuration
 There are various configuration settings to tweak how the module behaves and ensure that it aligns with how the graphite carbon cache writer is set up:
 
