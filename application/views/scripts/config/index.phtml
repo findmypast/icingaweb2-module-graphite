@@ -16,11 +16,15 @@ host_name_template = "icinga2.$host.name$.host.$host.check_command$.perfdata.$me
 ;if legacy mode is true (pre 2.4):
 ;service_name_template = "icinga.$host.name$.services.$service.name$.$service.check_command$"
 ;host_name_template = "icinga.$host.name$.host.$host.check_command$"
-;this template is used for the small image, macro $target$ can used.
-graphite_args_template = "&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=049BAF"
-;this template is used for the large image, macro $target$ can used.
-;graphite_large_args_template = "&target=alias(color($target$_warn,'yellow'),'warning')&target=alias(color($target$_crit,'red'),'critical')&target=$target$&source=0&width=800&height=700&colorList=049BAF&lineMode=connected"
-graphite_iframe_w=800px
-graphite_iframe_h=700px
+;this template is used for the small image, macros $target$ , $areaMode$ and $areaAlpha$ can used.
+graphite_args_template = "&target=$target$&source=0&width=300&height=120&hideAxes=true&lineWidth=2&hideLegend=true&colorList=$colorList$&areaMode=$areaMode$&areaAlpha=$areaAlpha$"
+;this template is used for the large image, macros $target$ , $areaMode$ and $areaAlpha$ can used.
+;graphite_large_args_template = "&target=alias(color($target$_warn,'yellow'),'warning')&target=alias(color($target$_crit,'red'),'critical')&target=$target$&source=0&width=800&height=700&colorList=$colorList$&lineMode=connected&areaMode=$areaMode$&areaAlpha=$areaAlpha$"
+graphite_iframe_w = 800px
+graphite_iframe_h = 700px
+graphite_area_mode = all
+graphite_area_alpha = 0.1
+graphite_summarize_interval = 10min
+graphite_color_list = 049BAF,EE1D00,04B06E,0446B0,871E10,CB315D,B06904,B0049C
 </pre>
 </div>
