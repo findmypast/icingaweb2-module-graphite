@@ -7,13 +7,22 @@
 <p><?= $this->escapedHint ?></p>
 <pre>
 [graphite]
-metric_prefix = icinga2
 base_url = http://graphite.com/render?
+
+; fetch remote image and inline the data
+remote_fetch = true
+; verify remote certificate
+remote_verify_peer = true
+; verify remote peer name
+remote_verify_peer_name = true
+
 legacy_mode = false
-;if legacy mode is false (2.4 and newer):
+
+; if legacy mode is false (2.4 and newer):
 service_name_template = "icinga2.$host.name$.services.$service.name$.$service.check_command$.perfdata.$metric$.value"
 host_name_template = "icinga2.$host.name$.host.$host.check_command$.perfdata.$metric$.value"
-;if legacy mode is true (pre 2.4):
+
+; if legacy mode is true (pre 2.4):
 ;service_name_template = "icinga.$host.name$.services.$service.name$.$service.check_command$"
 ;host_name_template = "icinga.$host.name$.host.$host.check_command$"
 ;this template is used for the small image, macros $target$ , $areaMode$ and $areaAlpha$ can used.
